@@ -21,17 +21,23 @@ func client() async throws {
             Number(Constant(42))
                 .bind(to: &number)
             
-            Repeat(10) {
+            var repeatResults = MagicVariable()
+            Repeat(Constant(10)) {
                 QuickLook(number)
             }
+            .bind(to: &repeatResults)
+            
+            QuickLook(repeatResults)
         }
     }
     
     let encoder = PropertyListEncoder()
     encoder.outputFormat = .xml
     
-    let data = try encoder.encode(DebugActionGroup().compileActionGroup())
-    let string = String(data: data, encoding: .utf8)!
-    
-    print(string)
+    for action in DebugActionGroup().compile() {
+        let data = try encoder.encode(action)
+        let string = String(data: data, encoding: .utf8)!
+        
+        print(string)
+    }
 }

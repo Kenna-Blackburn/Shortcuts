@@ -54,7 +54,7 @@ extension Array: AnalogousType where Element: AnalogousType {
 
 // MARK: ActionGroups
 extension Never: ActionGroup {
-    public func compileActionGroup() -> [RawAction] {
+    public func compile() -> [RawAction] {
         fatalError()
     }
     
@@ -63,40 +63,35 @@ extension Never: ActionGroup {
     }
 }
 
-// MARK: Actions
-extension Never: Action {
-    public var instanceID: UUID {
-        fatalError()
-    }
+public struct Comment: ActionGroup {
     
-    public func compileAction() -> RawAction {
-        fatalError()
-    }
-}
-
-public struct Comment: Action {
-    public var instanceID: UUID
+    public var trailingInstanceID: UUID
     
     public var text: ValueProvider
     
     public init(text: ValueProvider = Constant("")) {
-        self.instanceID = .init()
+        self.trailingInstanceID = .init()
         self.text = text
     }
     
-    public func compileAction() -> RawAction {
+    public var body: some ActionGroup {
         RawAction("is.workflow.actions.comment", [
             "WFCommentActionText": text,
         ])
+        .instanceID(trailingInstanceID)
     }
 }
 
 public struct Repeat<Content: ActionGroup>: ActionGroup {
+    
+    public var trailingInstanceID: UUID
+    
     public var groupingID: UUID
-    public var iterations: Int
+    public var iterations: ValueProvider
     public var content: Content
     
-    public init(_ iterations: Int, @ActionGroupBuilder content: () -> Content) {
+    public init(_ iterations: ValueProvider, @ActionGroupBuilder content: () -> Content) {
+        self.trailingInstanceID = .init()
         self.groupingID = .init()
         self.iterations = iterations
         self.content = content()
@@ -115,39 +110,44 @@ public struct Repeat<Content: ActionGroup>: ActionGroup {
             "GroupingIdentifier": groupingID,
             "WFControlFlowMode": 2,
         ])
+        .instanceID(trailingInstanceID)
     }
 }
 
-public struct QuickLook: Action {
-    public var instanceID: UUID
+public struct QuickLook: ActionGroup {
+    
+    public var trailingInstanceID: UUID
     
     public var value: ValueProvider
     
     public init(_ value: ValueProvider) {
-        self.instanceID = .init()
+        self.trailingInstanceID = .init()
         self.value = value
     }
     
-    public func compileAction() -> RawAction {
+    public var body: some ActionGroup {
         RawAction("is.workflow.actions.previewdocument", [
             "WFInput": value,
         ])
+        .instanceID(trailingInstanceID)
     }
 }
 
-public struct Number: Action {
-    public var instanceID: UUID
+public struct Number: ActionGroup {
+    
+    public var trailingInstanceID: UUID
     
     public var number: ValueProvider
     
     public init(_ number: ValueProvider) {
-        self.instanceID = .init()
+        self.trailingInstanceID = .init()
         self.number = number
     }
     
-    public func compileAction() -> RawAction {
+    public var body: some ActionGroup {
         RawAction("is.workflow.actions.number", [
             "WFNumberActionNumber": number
         ])
+        .instanceID(trailingInstanceID)
     }
 }

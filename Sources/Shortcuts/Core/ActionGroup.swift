@@ -10,22 +10,27 @@ import Foundation
 public protocol ActionGroup {
     associatedtype Body: ActionGroup
     
-    func compileActionGroup() -> [RawAction]
+    var trailingInstanceID: UUID { get }
+    
+    func compile() -> [RawAction]
     
     @ActionGroupBuilder
     var body: Body { get }
 }
 
 extension ActionGroup {
-    public func compileActionGroup() -> [RawAction] {
-        body.compileActionGroup()
+    public var trailingInstanceID: UUID {
+        body.trailingInstanceID
+    }
+    
+    public func compile() -> [RawAction] {
+        body.compile()
     }
 }
 
 extension ActionGroup {
-    var instanceID: UUID? {
-        body.compileActionGroup().last?.instanceID
+    public func bind(to magicVariable: inout MagicVariable) -> Self {
+        magicVariable.actionInstanceID = trailingInstanceID
+        return self
     }
 }
-
-

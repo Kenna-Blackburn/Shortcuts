@@ -8,14 +8,14 @@
 import Foundation
 import Helpers
 
-public struct RawAction: Action, Encodable {
+public struct RawAction: ActionGroup, Encodable {
     
     public var actionID: String
     public var parameters: [String: Any]
     
     public var instanceID: UUID
     
-    init(
+    public init(
         actionID: String,
         parameters: [String: Any],
         instanceID: UUID = .init(),
@@ -29,8 +29,16 @@ public struct RawAction: Action, Encodable {
         self.init(actionID: actionID, parameters: parameters)
     }
     
-    public func compileAction() -> RawAction {
-        return self
+    public var trailingInstanceID: UUID {
+        return instanceID
+    }
+    
+    public func compile() -> [RawAction] {
+        return [self]
+    }
+    
+    public var body: some ActionGroup {
+        fatalError()
     }
     
     public func encode(to encoder: any Encoder) throws {

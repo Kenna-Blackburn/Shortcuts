@@ -8,33 +8,28 @@
 import Foundation
 
 public struct AnyActionGroup: ActionGroup {
-    public var _compileActionGroup: () -> [RawAction]
     
-    public init(_ compileActionGroup: @escaping () -> [RawAction]) {
-        self._compileActionGroup = compileActionGroup
-    }
+    public var children: [any ActionGroup]
     
-    public init(_ base: some ActionGroup) {
-        self.init(base.compileActionGroup)
-    }
-    
-    public init(_ rawActions: [RawAction]) {
-        self.init({ rawActions })
+    public init(children: [any ActionGroup]) {
+        self.children = children
     }
     
     public init<each T: ActionGroup>(_ actionGroup: repeat each T) {
-        self.init {
-            var result = [RawAction]()
-            for actionGroup in repeat each actionGroup {
-                result.append(contentsOf: actionGroup.compileActionGroup())
-            }
-            
-            return result
+        var children = [any ActionGroup]()
+        for actionGroup in repeat each actionGroup {
+            children.append(actionGroup)
         }
+        
+        self.init(children: children)
     }
     
-    public func compileActionGroup() -> [RawAction] {
-        _compileActionGroup()
+    public var trailingInstanceID: UUID {
+        children.last!.trailingInstanceID
+    }
+    
+    public func compile() -> [RawAction] {
+        children.flatMap({ $0.compile() })
     }
     
     public var body: some ActionGroup {
