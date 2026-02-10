@@ -22,6 +22,10 @@ extension ActionGroup {
     }
 }
 
-
+extension ActionGroup {
+    var instanceID: UUID? {
+        body.compileActionGroup().last?.instanceID
+    }
+}
 
 
