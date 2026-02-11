@@ -13,21 +13,13 @@ import Testing
 func client() async throws {
     struct DebugActionGroup: ActionGroup {
         var body: some ActionGroup {
-            Comment(text: Constant("""
-            Made by Kenna Blackburn on 02/10/26 with SPM/Shortcuts
-            """))
-            
-            var number = MagicVariable()
-            Number(Constant(42))
-                .bind(to: &number)
-            
-            var repeatResults = MagicVariable()
-            Repeat(Constant(10)) {
-                QuickLook(number)
+            Menu("Title") {
+                for i in 1...3 {
+                    Menu.Item("Item #\(i)") {
+                        QuickLook(Constant(i))
+                    }
+                }
             }
-            .bind(to: &repeatResults)
-            
-            QuickLook(repeatResults)
         }
     }
     
