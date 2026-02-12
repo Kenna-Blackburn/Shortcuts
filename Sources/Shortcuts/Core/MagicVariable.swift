@@ -11,11 +11,9 @@ import Helpers
 public struct MagicVariable: ValueProvider {
     
     public var actionInstanceID: UUID?
-    public var customName: String?
     
-    public init(_ customName: String? = nil) {
+    public init() {
         self.actionInstanceID = nil
-        self.customName = customName
     }
     
     public func encode(to encoder: any Encoder) throws {
@@ -23,7 +21,6 @@ public struct MagicVariable: ValueProvider {
             "Value": [
                 "Type": "ActionOutput",
                 "OutputUUID": actionInstanceID as Any,
-                "OutputName": customName as Any,
             ],
             "WFSerializationType": "WFTextTokenAttachment",
         ]

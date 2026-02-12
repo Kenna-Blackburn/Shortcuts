@@ -18,7 +18,7 @@ func client() async throws {
             Made by Kenna Blackburn on 02/11/26 with SPM/Shortcuts
             """)
             
-            var payload = MagicVariable("Payload")
+            var payload = MagicVariable()
             AskFor.Text(
                 with: "Payload",
                 default: "The Answer to the Great Question... Of Life, the Universe and Everything... Is... Forty-two,' said Deep Thought, with infinite majesty and calm.",
@@ -26,7 +26,7 @@ func client() async throws {
             )
             .bind(to: &payload)
             
-            var target = MagicVariable("Target")
+            var target = MagicVariable()
             SelectContacts(multiple: true)
                 .bind(to: &target)
             
