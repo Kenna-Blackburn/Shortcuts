@@ -25,7 +25,10 @@ public struct RawAction: ActionGroup, Encodable {
         self.instanceID = instanceID
     }
     
-    public init(_ actionID: String, _ parameters: [String: Any]) {
+    public init(
+        _ actionID: String,
+        _ parameters: [String: Any],
+    ) {
         self.init(actionID: actionID, parameters: parameters)
     }
     

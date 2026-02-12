@@ -11,25 +11,41 @@ import Testing
 
 @Test("Client")
 func client() async throws {
-    struct DebugActionGroup: ActionGroup {
+    struct DebugShortcut: Shortcut {
         var body: some ActionGroup {
-            Menu("Title") {
-                for i in 1...3 {
-                    Menu.Item("Item #\(i)") {
-                        QuickLook(Constant(i))
-                    }
-                }
+            Comment("""
+            v0.0.1
+            Made by Kenna Blackburn on 02/11/26 with SPM/Shortcuts
+            """)
+            
+            var payload = MagicVariable("Payload")
+            AskFor.Text(
+                with: "Payload",
+                default: "The Answer to the Great Question... Of Life, the Universe and Everything... Is... Forty-two,' said Deep Thought, with infinite majesty and calm.",
+                multiline: true,
+            )
+            .bind(to: &payload)
+            
+            var target = MagicVariable("Target")
+            SelectContacts(multiple: true)
+                .bind(to: &target)
+            
+            var splitText = MagicVariable()
+            SplitText(payload, by: " ")
+                .bind(to: &splitText)
+            
+            RepeatEach(splitText) { (i, token) in
+                ShowResult(token)
             }
         }
     }
     
     let encoder = PropertyListEncoder()
     encoder.outputFormat = .xml
+    let data = try encoder.encode(DebugShortcut().compile())
+    let string = String(data: data, encoding: .utf8)!
+    print(string)
     
-    for action in DebugActionGroup().compile() {
-        let data = try encoder.encode(action)
-        let string = String(data: data, encoding: .utf8)!
-        
-        print(string)
-    }
+    let url = URL.downloadsDirectory.appending(path: "DebugShortcut.shortcut")
+    try await DebugShortcut().compile(to: url, using: .cli())
 }

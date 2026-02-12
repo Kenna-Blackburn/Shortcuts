@@ -6,8 +6,10 @@
 //
 
 import Foundation
+import Helpers
 
 public struct MagicVariable: ValueProvider {
+    
     public var actionInstanceID: UUID?
     public var customName: String?
     
@@ -17,24 +19,15 @@ public struct MagicVariable: ValueProvider {
     }
     
     public func encode(to encoder: any Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
+        let dictionary: [String: Any] = [
+            "Value": [
+                "Type": "ActionOutput",
+                "OutputUUID": actionInstanceID as Any,
+                "OutputName": customName as Any,
+            ],
+            "WFSerializationType": "WFTextTokenAttachment",
+        ]
         
-        var valueContainer = container.nestedContainer(keyedBy: CodingKeys.ValueKeys.self, forKey: .value)
-        try valueContainer.encode(actionInstanceID, forKey: .actionInstanceID)
-        try valueContainer.encode(customName, forKey: .customName)
-        try valueContainer.encode("ActionOutput", forKey: .type)
-        
-        try container.encode("WFTextTokenAttachment", forKey: .serializationType)
-    }
-    
-    private enum CodingKeys: String, CodingKey {
-        case value = "Value"
-        case serializationType = "WFSerializationType"
-        
-        enum ValueKeys: String, CodingKey {
-            case actionInstanceID = "OutputUUID"
-            case customName = "OutputName"
-            case type = "Type"
-        }
+        try AnyEncodable(dictionary).encode(to: encoder)
     }
 }
