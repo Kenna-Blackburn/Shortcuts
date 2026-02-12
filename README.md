@@ -1,6 +1,8 @@
 
 # SPM/Shortcuts
 
+## Usage Example
+
 ```swift
 struct DebugShortcut: Shortcut {
   var body: some ActionGroup {
@@ -38,3 +40,10 @@ try await DebugShortcut().compile(to: url, using: .cli())
 ```
 
 https://www.icloud.com/shortcuts/c4c73cf03401482c9936638bb9a0731c
+
+## Todo
+
+- [ ] More Actions
+- [ ] Aggrandizements
+- [ ] Tick Repeat Index/Item
+- [ ] `instanceID` rt errors?
